@@ -17,7 +17,7 @@ def _insert_in_kwargs(kwargs, key, arg):
 
 def _partial_pipe(func, args, kwargs):
     if args or kwargs:
-        return _pipe_with_args(args, kwargs)
+        return _pipe_with_args(func, args, kwargs)
     else:
         return Pipe(func)
 
