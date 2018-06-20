@@ -9,7 +9,7 @@ def patch_cls(cls):
     @functools.wraps(original)
     def wrapper(self, x):
         if isinstance(x, Pipe):
-            return x.__or__(self)
+            return x.__ror__(self)
         return original(self, x)
 
     cls.__or__ = wrapper
