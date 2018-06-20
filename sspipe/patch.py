@@ -13,17 +13,3 @@ def patch_cls(cls):
         return original(self, x)
 
     cls.__or__ = wrapper
-
-
-def patch_pandas():
-    import pandas
-    patch_cls(pandas.Series)
-    patch_cls(pandas.DataFrame)
-
-
-def patch_all():
-    for patch in [patch_pandas]:
-        try:
-            patch()
-        except ImportError:
-            pass
