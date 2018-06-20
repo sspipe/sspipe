@@ -16,4 +16,3 @@ class Facade():
 
 
 p = Facade()
-px = p(lambda x: x)

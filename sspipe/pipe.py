@@ -1,6 +1,3 @@
-import functools
-
-
 class Pipe(object):
     __array_ufunc__ = None
 
@@ -93,15 +90,3 @@ class Pipe(object):
 
     def __getattr__(self, attr):
         return Pipe(lambda x: getattr(self._____func___(x), attr))
-
-    @staticmethod
-    def patch_cls(cls):
-        original = cls.__truediv__
-
-        @functools.wraps(original)
-        def wrapper(self, x):
-            if isinstance(x, Pipe):
-                return x.__rtruediv__(self)
-            return original(self, x)
-
-        cls.__truediv__ = wrapper
