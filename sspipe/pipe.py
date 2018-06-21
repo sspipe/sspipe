@@ -42,7 +42,7 @@ def _override_operator(operator):
 
 
 for op in [
-    'len', 'abs', 'bool', 'index', 'length_hint',
+    'len', 'abs',
     'contains', 'await',
     'lt', 'le', 'gt', 'ge', 'eq', 'ne',
     'xor', 'and',
