@@ -12,6 +12,9 @@ class Pipe(object):
     def __ror__(self, other):
         return self._____func___(other)
 
+    def __rtruediv__(self, other):
+        return self._____func___(other)
+
     def __or__(self, other):
         return Pipe(lambda x: self._____func___(x) | other)
 
@@ -26,16 +29,21 @@ class Pipe(object):
 
 
 def _override_operator(operator):
-    def implementation(self, *args):
+    def implementation(self, *args, **kwargs):
         def func(x):
-            resolved_args = [arg._____func___(x) if isinstance(arg, Pipe) else arg for arg in args]
-            return getattr(self._____func___(x), operator)(*resolved_args)
+            resolved_args = (arg._____func___(x) if isinstance(arg, Pipe) else arg for arg in args)
+            for k, v in tuple(kwargs.items()):
+                if isinstance(v, Pipe):
+                    kwargs[k] = v._____func___(x)
+            return getattr(self._____func___(x), operator)(*resolved_args, **kwargs)
+
         return Pipe(func)
 
     setattr(Pipe, operator, implementation)
 
 
 for op in [
+    'len', 'abs', 'bool', 'index', 'length_hint',
     'contains', 'await',
     'lt', 'le', 'gt', 'ge', 'eq', 'ne',
     'xor', 'and',
