@@ -10,6 +10,8 @@ class Pipe(object):
     __array_ufunc__ = None
 
     def __init__(self, func):
+        if isinstance(func, Pipe):
+            func = func._____func___
         self._____func___ = func
 
     def __ror__(self, other):
