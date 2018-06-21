@@ -1,3 +1,6 @@
+FALLBACK_RTRUEDIV_TYPES = (type(dict().keys()), type(dict().values()))
+
+
 class Pipe(object):
     """
     >>> [lambda : '{}'] | (Pipe(lambda x: x)[0]().format(2) | Pipe(int)**3)
@@ -13,16 +16,12 @@ class Pipe(object):
         return self._____func___(other)
 
     def __rtruediv__(self, other):
-        return self._____func___(other)
+        if isinstance(other, FALLBACK_RTRUEDIV_TYPES):
+            return self._____func___(other)
+        return Pipe(lambda x: other / self._____func___(x))
 
     def __or__(self, other):
         return Pipe(lambda x: self._____func___(x) | other)
-
-    def __await__(self):
-        async def func(x):
-            return await self._____func___(x)
-
-        return Pipe(func)
 
     def __getattr__(self, attr):
         return Pipe(lambda x: getattr(self._____func___(x), attr))

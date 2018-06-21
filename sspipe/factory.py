@@ -2,7 +2,17 @@ from .pipe import Pipe
 
 
 def _pipe_with_args(func, args, kwargs):
-    return Pipe(lambda x: func(x, *args, **kwargs))
+    if any(isinstance(arg, Pipe) for arg in args) or any(isinstance(arg, Pipe) for arg in kwargs.values()):
+        def fixed_func(x):
+            resolved_args = (arg._____func___(x) if isinstance(arg, Pipe) else arg for arg in args)
+            for k, v in tuple(kwargs.items()):
+                if isinstance(v, Pipe):
+                    kwargs[k] = v._____func___(x)
+            return func(*resolved_args, **kwargs)
+
+        return Pipe(fixed_func)
+    else:
+        return Pipe(lambda x: func(x, *args, **kwargs))
 
 
 def _insert_in_args(args, idx, arg):
