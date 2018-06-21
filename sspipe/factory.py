@@ -16,8 +16,7 @@ def _pipe_with_args(func, args, kwargs):
 
 
 def _insert_in_args(args, idx, arg):
-    args[idx:idx] = arg
-    return args
+    return args[:idx] + (arg,) + args[idx:]
 
 
 def _insert_in_kwargs(kwargs, key, arg):
