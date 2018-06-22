@@ -1,2 +1,2 @@
 #!/bin/bash
-rm -r dist/; python setup.py sdist bdist_wheel && twine upload dist/*
+rm -r dist/ build/; python setup.py sdist bdist_wheel && twine upload dist/*
