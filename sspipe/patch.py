@@ -17,4 +17,16 @@ def _patch_cls_method(cls, method):
 
 def patch_cls_operator(cls):
     _patch_cls_method(cls, '__or__')
-    _patch_cls_method(cls, '__ior__')
+    if hasattr(cls, '__ior__'):
+        _patch_cls_method(cls, '__ior__')
+
+
+def patch_all():
+    try:
+        import pandas
+
+        patch_cls_operator(pandas.Series)
+        patch_cls_operator(pandas.DataFrame)
+        patch_cls_operator(pandas.Index)
+    except ImportError:
+        pass

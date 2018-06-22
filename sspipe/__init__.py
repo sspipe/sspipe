@@ -1,13 +1,8 @@
 from .facade import p
 from .version import __version__
-from .patch import patch_cls_operator
+from .patch import patch_all
 
 px = p(lambda x: x)
 
-try:
-    import pandas
-
-    patch_cls_operator(pandas.Series)
-    patch_cls_operator(pandas.DataFrame)
-except ImportError:
-    pass
+patch_all()
+del patch_all
