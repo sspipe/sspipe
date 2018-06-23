@@ -27,7 +27,7 @@ class Facade():
         def make_pipe(*args, **kwargs):
             if args and isinstance(args[0], Pipe):
                 args = (Pipe.unpipe(args[0]),) + args[1:]
-            return Pipe.partial(func, args + (px,), kwargs)
+            return Pipe.partial(func, *args, px, **kwargs)
 
         setattr(self, item, make_pipe)
         return make_pipe

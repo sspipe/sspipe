@@ -9,13 +9,6 @@ def _resolve(pipe, x):
     return pipe
 
 
-def _resolve_function_call(func, args, kwargs, x):
-    func = _resolve(func, x)
-    resolved_args = (_resolve(arg, x) for arg in args)
-    resolved_kwargs = {k: _resolve(v, x) for k, v in kwargs.items()}
-    return func(*resolved_args, **resolved_kwargs)
-
-
 class Pipe(object):
     """
     >>> [lambda : '{}'] | (Pipe(lambda x: x)[0]().format(2) | Pipe(int)**3)
@@ -47,21 +40,33 @@ class Pipe(object):
         return pipe._____func___
 
     @staticmethod
-    def partial(func, args, kwargs):
-        return Pipe(functools.partial(_resolve_function_call, func, args, kwargs))
+    def partial(func, *args, **kwargs):
+        if kwargs:
+            def _resolve_function_call(x):
+                resolved_func = _resolve(func, x)
+                resolved_args = (_resolve(arg, x) for arg in args)
+                resolved_kwargs = {k: _resolve(v, x) for k, v in kwargs.items()}
+                return resolved_func(*resolved_args, **resolved_kwargs)
+        else:
+            def _resolve_function_call(x):
+                resolved_func = _resolve(func, x)
+                resolved_args = (_resolve(arg, x) for arg in args)
+                return resolved_func(*resolved_args)
+
+        return Pipe(_resolve_function_call)
 
     def __getattr__(self, item):
-        return Pipe.partial(getattr, (self, item), {})
+        return Pipe.partial(getattr, self, item)
 
     def __call__(self, *args, **kwargs):
-        return Pipe.partial(self, args, kwargs)
+        return Pipe.partial(self, *args, **kwargs)
 
 
 def _override_operator(op):
-    def __operator__(self, *args, **kwargs):
+    def __operator__(self, *args):
         # `Pipe.partial` resolves `self` before calling `getattr`:
-        resolved_operator = Pipe.partial(getattr, (self, op), {})
-        return Pipe.partial(resolved_operator, args, kwargs)
+        resolved_operator = Pipe.partial(getattr, self, op)
+        return Pipe.partial(resolved_operator, *args)
 
     setattr(Pipe, op, __operator__)
 
