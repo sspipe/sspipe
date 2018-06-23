@@ -1,5 +1,4 @@
 import functools
-import operator
 
 FALLBACK_RTRUEDIV_TYPES = (type(dict().keys()), type(dict().values()))
 
@@ -10,7 +9,7 @@ def _resolve(pipe, x):
     return pipe
 
 
-def _call_with_resolved_args(func, args, kwargs, x):
+def _resolve_function_call(func, args, kwargs, x):
     func = _resolve(func, x)
     resolved_args = (_resolve(arg, x) for arg in args)
     resolved_kwargs = {k: _resolve(v, x) for k, v in kwargs.items()}
@@ -26,7 +25,6 @@ class Pipe(object):
     __array_ufunc__ = None
 
     def __init__(self, func):
-        assert not isinstance(func, Pipe)
         self._____func___ = func
 
     def __ror__(self, other):
@@ -45,32 +43,25 @@ class Pipe(object):
         return Pipe(lambda x: _resolve(other, x) / _resolve(self, x))
 
     @staticmethod
-    def unwrap(pipe):
+    def unpipe(pipe):
         return pipe._____func___
 
     @staticmethod
     def partial(func, args, kwargs):
-        if not args and not kwargs:
-            return Pipe(func)
-        elif any(isinstance(arg, Pipe) for arg in args) or any(isinstance(arg, Pipe) for arg in kwargs.values()):
-            return Pipe(lambda x: _call_with_resolved_args(func, args, kwargs, x))
-        else:
-            return Pipe(lambda x: func(*args, x, **kwargs))
-
-    @staticmethod
-    def partial2(func, args, kwargs):
-        return Pipe(lambda x: _call_with_resolved_args(func, args, kwargs, x))
+        return Pipe(functools.partial(_resolve_function_call, func, args, kwargs))
 
     def __getattr__(self, item):
-        return Pipe.partial2(getattr, (self, item), {})
+        return Pipe.partial(getattr, (self, item), {})
 
     def __call__(self, *args, **kwargs):
-        return Pipe.partial2(self, args, kwargs)
+        return Pipe.partial(self, args, kwargs)
 
 
 def _override_operator(op):
     def __operator__(self, *args, **kwargs):
-        return Pipe.partial2(Pipe.partial2(getattr, (self, op), {}), args, kwargs)
+        # `Pipe.partial` resolves `self` before calling `getattr`:
+        resolved_operator = Pipe.partial(getattr, (self, op), {})
+        return Pipe.partial(resolved_operator, args, kwargs)
 
     setattr(Pipe, op, __operator__)
 

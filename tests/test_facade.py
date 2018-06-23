@@ -14,13 +14,14 @@ def test_pipe_args():
 
 def test_nonfirst_arg():
     def f(x, y):
+        return x + 3 * y
+
+    result = 1 | p[0](f, 8)
+    assert result == 25
+
+
+def test_nonfirst_pipe_arg():
+    def f(x, y):
         return x + 2 * y
 
-    assert (1 | p[1](f, 2)) == 4
-
-
-# def test_nonfirst_pipe_arg():
-#     def f(x, y):
-#         return x + 2 * y
-#
-#     assert (1 | p[1](f, px * 3)) == 5
+    assert (1 | p[1](f, px * 3)) == 5

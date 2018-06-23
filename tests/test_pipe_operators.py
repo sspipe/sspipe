@@ -18,6 +18,11 @@ def test_level1():
         assert expected == result
 
 
+def test_level2():
+    result = 1 | (px == px)
+    assert result == True
+
+
 def test_divide():
     pipeline = 1 / px
     assert (2 | pipeline) == 0.5
