@@ -1,3 +1,4 @@
+import functools
 import operator
 
 FALLBACK_RTRUEDIV_TYPES = (type(dict().keys()), type(dict().values()))
@@ -10,6 +11,7 @@ def _resolve(pipe, x):
 
 
 def _call_with_resolved_args(func, args, kwargs, x):
+    func = _resolve(func, x)
     resolved_args = (_resolve(arg, x) for arg in args)
     resolved_kwargs = {k: _resolve(v, x) for k, v in kwargs.items()}
     return func(*resolved_args, **resolved_kwargs)
@@ -47,28 +49,28 @@ class Pipe(object):
         return pipe._____func___
 
     @staticmethod
-    def create(func, args, kwargs):
-        """
-        >>> f = lambda x, y, z: x+y+z
-        >>> 1 | Pipe.create(f, (2,), dict(z=3))
-        6
-        """
-        assert not isinstance(func, Pipe) and callable(func)
-
+    def partial(func, args, kwargs):
         if not args and not kwargs:
             return Pipe(func)
         elif any(isinstance(arg, Pipe) for arg in args) or any(isinstance(arg, Pipe) for arg in kwargs.values()):
             return Pipe(lambda x: _call_with_resolved_args(func, args, kwargs, x))
         else:
-            return Pipe(lambda x: func(x, *args, **kwargs))
+            return Pipe(lambda x: func(*args, x, **kwargs))
+
+    @staticmethod
+    def partial2(func, args, kwargs):
+        return Pipe(lambda x: _call_with_resolved_args(func, args, kwargs, x))
 
     def __getattr__(self, item):
-        return Pipe(lambda x: getattr(_resolve(self, x), _resolve(item, x)))
+        return Pipe.partial2(getattr, (self, item), {})
+
+    def __call__(self, *args, **kwargs):
+        return Pipe.partial2(self, args, kwargs)
 
 
 def _override_operator(op):
     def __operator__(self, *args, **kwargs):
-        return Pipe(lambda x: _call_with_resolved_args(getattr(_resolve(self, x), op), args, kwargs, x))
+        return Pipe.partial2(Pipe.partial2(getattr, (self, op), {}), args, kwargs)
 
     setattr(Pipe, op, __operator__)
 
@@ -82,5 +84,5 @@ for op in [
     'add', 'sub', 'mul', 'matmul', 'pow',
     'truediv', 'floordiv', 'mod',
     'pos', 'neg', 'invert',
-    'call', 'getitem']:
+    'getitem']:
     _override_operator('__{}__'.format(op))

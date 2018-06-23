@@ -15,7 +15,7 @@ class Facade():
         >>> 1 | p('{}{}{x}'.format, 2, x=3)
         '123'
         """
-        return Pipe.create(func, args, kwargs)
+        return Pipe.partial(func, args, kwargs)
 
     def __getattr__(self, item):
         """
@@ -26,7 +26,7 @@ class Facade():
         func = getattr(curried, item)
 
         def make_pipe(*args, **kwargs):
-            if isinstance(args[0], Pipe):
+            if args and isinstance(args[0], Pipe):
                 args = (Pipe.unwrap(args[0]),) + args[1:]
             return Pipe(lambda x: _call_with_resolved_args(func, args + (x,), kwargs, x))
 
