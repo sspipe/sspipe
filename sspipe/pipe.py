@@ -15,8 +15,6 @@ class Pipe(object):
     8
     """
     __slots__ = ('_____func___',)
-    
-    __array_ufunc__ = None
 
     def __init__(self, func):
         self._____func___ = func
@@ -36,31 +34,51 @@ class Pipe(object):
 
         return Pipe(lambda x: _resolve(other, x) / _resolve(self, x))
 
+    def __getattr__(self, item):
+        return Pipe.partial(getattr, self, item)
+
+    def __call__(self, *args, **kwargs):
+        return Pipe.partial(self, *args, **kwargs)
+
+    @staticmethod
+    def __array_ufunc__(func, method, *args, **kwargs):
+        if method == '__call__':
+            return Pipe.partial(func, *args, **kwargs)
+
+        return NotImplemented
+
     @staticmethod
     def unpipe(pipe):
         return pipe._____func___
 
     @staticmethod
     def partial(func, *args, **kwargs):
-        if kwargs:
-            def _resolve_function_call(x):
-                resolved_func = _resolve(func, x)
-                resolved_args = (_resolve(arg, x) for arg in args)
-                resolved_kwargs = {k: _resolve(v, x) for k, v in kwargs.items()}
-                return resolved_func(*resolved_args, **resolved_kwargs)
+        if isinstance(func, Pipe):
+            if kwargs:
+                def _resolve_function_call(x):
+                    resolved_func = _resolve(func, x)
+                    resolved_args = (_resolve(arg, x) for arg in args)
+                    resolved_kwargs = {k: _resolve(v, x) for k, v in kwargs.items()}
+                    return resolved_func(*resolved_args, **resolved_kwargs)
+            else:
+                def _resolve_function_call(x):
+                    resolved_func = _resolve(func, x)
+                    resolved_args = (_resolve(arg, x) for arg in args)
+                    return resolved_func(*resolved_args)
+
+            return Pipe(_resolve_function_call)
         else:
-            def _resolve_function_call(x):
-                resolved_func = _resolve(func, x)
-                resolved_args = (_resolve(arg, x) for arg in args)
-                return resolved_func(*resolved_args)
+            if kwargs:
+                def _resolve_function_call(x):
+                    resolved_args = (_resolve(arg, x) for arg in args)
+                    resolved_kwargs = {k: _resolve(v, x) for k, v in kwargs.items()}
+                    return func(*resolved_args, **resolved_kwargs)
+            else:
+                def _resolve_function_call(x):
+                    resolved_args = (_resolve(arg, x) for arg in args)
+                    return func(*resolved_args)
 
-        return Pipe(_resolve_function_call)
-
-    def __getattr__(self, item):
-        return Pipe.partial(getattr, self, item)
-
-    def __call__(self, *args, **kwargs):
-        return Pipe.partial(self, *args, **kwargs)
+            return Pipe(_resolve_function_call)
 
 
 def _override_operator(op):
