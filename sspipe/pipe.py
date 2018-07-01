@@ -14,7 +14,8 @@ class Pipe(object):
     >>> [lambda : '{}'] | (Pipe(lambda x: x)[0]().format(2) | Pipe(int)**3)
     8
     """
-    # __slots__ = ('_____func___',)
+    __slots__ = ('_____func___',)
+    
     __array_ufunc__ = None
 
     def __init__(self, func):
