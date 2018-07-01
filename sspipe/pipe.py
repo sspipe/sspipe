@@ -76,9 +76,13 @@ for op in [
     'contains', 'await',
     'lt', 'le', 'gt', 'ge', 'eq', 'ne',
     'xor', 'and',
+    'rxor', 'rand',
     'rshift', 'lshift',
+    'rrshift', 'rlshift',
     'add', 'sub', 'mul', 'matmul', 'pow',
+    'radd', 'rsub', 'rmul', 'rmatmul', 'rpow',
     'truediv', 'floordiv', 'mod',
+    'rfloordiv', 'rmod',  # skipped rtruediv because it is implemented in Pipe class
     'pos', 'neg', 'invert',
     'getitem']:
     _override_operator('__{}__'.format(op))

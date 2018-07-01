@@ -29,3 +29,8 @@ def test_divide():
 
     pipeline = (px + 1) / (px + 2)
     assert (2 | pipeline) == 0.75
+
+
+def test_reverse():
+    assert (1 | 2 + px) == 3
+    assert (1 | 2 << px) == 4
