@@ -30,3 +30,10 @@ def patch_all():
         patch_cls_operator(pandas.Index)
     except ImportError:
         pass
+
+    try:
+        import torch
+
+        patch_cls_operator(torch.Tensor)
+    except ImportError:
+        pass

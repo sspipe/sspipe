@@ -13,7 +13,7 @@ with open(path.join(here, 'sspipe', 'version.py')) as f:
 setup(
     name='sspipe',  # Required
     version=__version__,  # Required
-    description='Stupid Simple Pipe',  # Required
+    description='Simple Stupid Pipe',  # Required
     long_description=long_description,  # Optional
     long_description_content_type='text/markdown',  # Optional (see note above)
     url='https://github.com/sspipe/sspipe.git',  # Optional

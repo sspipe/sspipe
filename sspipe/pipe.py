@@ -1,4 +1,4 @@
-import functools
+import operator
 
 FALLBACK_RTRUEDIV_TYPES = (type(dict().keys()), type(dict().values()))
 
@@ -20,7 +20,8 @@ class Pipe(object):
         self._____func___ = func
 
     def __ror__(self, other):
-        return _resolve(self, other)
+        ret = _resolve(self, other)
+        return ret
 
     def __or__(self, other):
         if isinstance(other, Pipe):
@@ -40,11 +41,25 @@ class Pipe(object):
     def __call__(self, *args, **kwargs):
         return Pipe.partial(self, *args, **kwargs)
 
+    __array_priority__ = -10
+
     @staticmethod
     def __array_ufunc__(func, method, *args, **kwargs):
-        if method == '__call__':
+        import numpy
+        if callable(method) and args[0] == '__call__':
+            if method is numpy.bitwise_or:
+                if isinstance(args[1], Pipe):
+                    return Pipe.partial(_resolve, args[2], args[1])
+                else:
+                    return _resolve(args[2], args[1])
+            return Pipe.partial(method, *args[1:], **kwargs)
+        elif method == '__call__':
+            if func.name == 'bitwise_or':
+                if isinstance(args[0], Pipe):
+                    return Pipe.partial(_resolve, args[1], args[0])
+                else:
+                    return _resolve(args[1], args[0])
             return Pipe.partial(func, *args, **kwargs)
-
         return NotImplemented
 
     @staticmethod
@@ -81,16 +96,14 @@ class Pipe(object):
             return Pipe(_resolve_function_call)
 
 
-def _override_operator(op):
-    def __operator__(self, *args):
-        # `Pipe.partial` resolves `self` before calling `getattr`:
-        resolved_operator = Pipe.partial(getattr, self, op)
-        return Pipe.partial(resolved_operator, *args)
+def _override_operator(op, impl):
+    def __operator__(*args):
+        return Pipe.partial(impl, *args)
 
     setattr(Pipe, op, __operator__)
 
 
-for op in [
+for _op in [
     'len', 'abs',
     'contains', 'await',
     'lt', 'le', 'gt', 'ge', 'eq', 'ne',
@@ -104,4 +117,19 @@ for op in [
     'rfloordiv', 'rmod',  # skipped rtruediv because it is implemented in Pipe class
     'pos', 'neg', 'invert',
     'getitem']:
-    _override_operator('__{}__'.format(op))
+    _name = '__{}__'.format(_op)
+
+    if _op in ['and', 'rand']:
+        _impl = operator.and_
+    elif _op == 'len':
+        _impl = len
+    elif _op == 'await':
+        async def _impl(x):
+            return await x
+    else:
+        try:
+            _impl = getattr(operator, _op)
+        except AttributeError:
+            _impl = getattr(operator, _op[1:])
+
+    _override_operator(_name, _impl)

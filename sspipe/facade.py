@@ -1,4 +1,3 @@
-from sspipe.factory import pipe_with_nonfirst_arg_factory, create_pipe, px
 from toolz import curried
 from sspipe.pipe import Pipe
 
@@ -14,7 +13,16 @@ class Facade():
         >>> 2 | p('{}{}{x}'.format, 1, x=3)
         '123'
         """
-        return create_pipe(func, args, kwargs)
+        if not args and not kwargs:
+            return Pipe(func)
+        elif any(
+            isinstance(arg, Pipe) for arg in args
+        ) or any(
+            isinstance(arg, Pipe) for arg in kwargs.values()
+        ) or isinstance(func, Pipe):
+            return Pipe.partial(func, *args, **kwargs)
+        else:
+            return Pipe(lambda x: func(*args, x, **kwargs))
 
     def __getattr__(self, item):
         """
@@ -32,8 +40,6 @@ class Facade():
         setattr(self, item, make_pipe)
         return make_pipe
 
-    def __getitem__(self, item):
-        return pipe_with_nonfirst_arg_factory(item)
-
 
 p = Facade()
+px = Pipe(lambda x: x)
