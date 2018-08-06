@@ -68,6 +68,7 @@ class Pipe(object):
 
     @staticmethod
     def partial(func, *args, **kwargs):
+        # Code duplication in this function is intentional to increase performance.
         if isinstance(func, Pipe):
             if kwargs:
                 def _resolve_function_call(x):

@@ -10,6 +10,5 @@ def test_simple():
 
 
 def test_plmap():
-    result = [1, 2] | p(map, lambda x: x+1) | p(list)
-    print(result)
+    result = [1, 2] | p(map, lambda x: x+1, px) | p(list)
     assert result == [2, 3]

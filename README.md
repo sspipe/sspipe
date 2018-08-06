@@ -1,4 +1,4 @@
-# Simple Stupid Pipe
+# Simple Smart Pipe
 
 SSPipe is a python productivity-tool for rapid data manipulation in python.
 
@@ -52,7 +52,7 @@ print(
     dict(
         sorted(
             map(
-                lambda x: (x, os.path.getsize(x)),
+                lambda x: [x, os.path.getsize(x)],
                 filter(os.path.isfile, os.listdir('.'))
             ), key=lambda x: x[1], reverse=True
         )[:5]
@@ -70,7 +70,7 @@ from sspipe import p
 (
     os.listdir('.')
     | p(filter, os.path.isfile)
-    | p(map, lambda x: (x, os.path.getsize(x)))
+    | p(map, lambda x: [x, os.path.getsize(x)])
     | p(sorted, key=lambda x: x[1], reverse=True)[:5]
     | p(dict)
     | p(print)
@@ -112,18 +112,37 @@ TODO: explain.
 * `[1,2] | p(pd.Series) | px[px ** 2 < np.log(px) + 1]` is equivalent to
 `x=pd.Series([1, 2]); x[x**2 < np.log(x)+1]`
 
-### Integration with PyToolz
+### Compatibility with JulienPalard/Pipe
 
-TODO: explain.
+This library is inspired by, and depends on, the intelligent and concise work of
+ [JulienPalard/Pipe](https://github.com/JulienPalard/Pipe). If you want
+ a single `pipe.py` script or a lightweight library that implements core
+ functionality and logic of SSPipe, Pipe is perfect.
 
-[PyToolz](https://github.com/pytoolz/toolz) provides a set of utility
-functions for iterators, functions, and dictionaries. For each utility
-function `f()` which is provided by pytoolz, `p.f()` is piped version
-of that utility.
+SSPipe is focused on facilitating usage of pipes, by integration with
+ popular libraries and introducing `px` concept and overriding python
+ operators to make pipe a first-class citizen.
 
-* `{'x': 1, 'y': 7} | p.valmap(px+1)` equals `{'x': 2, 'y': 8}`
-* `range(5) | p.map(px**2) | p(list)` equals `[0, 1, 4, 9, 16]`
+ Every existing pipe implemented by JulienPalard/Pipe
+ library is accessible through `p.<original_name>` and is compatible with SSPipe.
+ SSPipe does not implement any specific pipe function and delegates
+implementation and naming of pipe functions to JulienPalard/Pipe.
 
+For example, the snippet above can be implemented using JulienPalard/Pipe API:
+
+```python
+import os
+from sspipe import p, px
+
+(
+    os.listdir('.')
+    | p.where(os.path.isfile)
+    | p.select(lambda x: [x, os.path.getsize(x)])
+    | p.sort(key=px[1], reverse=True)[:5]
+    | p.as_dict()
+    | p.stdout()
+)
+```
 
 ### Internals
 
@@ -131,5 +150,4 @@ TODO: explain.
 
 * `p` is a class that overrides `__ror__` (`|`) operator to apply
 the function to operand.
-
 
