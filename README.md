@@ -138,7 +138,8 @@ from sspipe import p, px
     os.listdir('.')
     | p.where(os.path.isfile)
     | p.select(lambda x: [x, os.path.getsize(x)])
-    | p.sort(key=px[1], reverse=True)[:5]
+    | p.sort(key=px[1], reverse=True)
+    | p.take(5)
     | p.as_dict()
     | p.stdout()
 )
