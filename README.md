@@ -135,9 +135,9 @@ for solving "Find the sum of all the even-valued terms in Fibonacci which do not
 can be re-written using sspipe:
 
 ```python
-def fib(n):
+def fib():
     a, b = 0, 1
-    for _ in range(n):
+    while True:
         yield a
         a, b = b, a + b
 
