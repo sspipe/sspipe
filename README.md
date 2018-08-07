@@ -130,21 +130,22 @@ SSPipe is focused on facilitating usage of pipes, by integration with
  SSPipe does not implement any specific pipe function and delegates
 implementation and naming of pipe functions to JulienPalard/Pipe.
 
-For example, the snippet above can be implemented using JulienPalard/Pipe API:
+For example, JulienPalard/Pipe's [example](https://github.com/JulienPalard/Pipe#introduction)
+for solving "Find the sum of all the even-valued terms in Fibonacci which do not exceed four million."
+can be re-written using sspipe:
 
 ```python
-import os
+def fib(n):
+    a, b = 0, 1
+    for _ in range(n):
+        yield a
+        a, b = b, a + b
+
 from sspipe import p, px
 
-(
-    os.listdir('.')
-    | p.where(os.path.isfile)
-    | p.select(lambda x: [x, os.path.getsize(x)])
-    | p.sort(key=px[1], reverse=True)
-    | p.take(5)
-    | p.as_dict()
-    | p.stdout()
-)
+euler2 = (fib() | p.where(px % 2 == 0)
+                | p.take_while(px < 4000000)
+                | add)
 ```
 
 ### Internals
