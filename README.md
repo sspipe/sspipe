@@ -1,3 +1,5 @@
+[![Downloads](http://pepy.tech/badge/sspipe)](http://pepy.tech/project/sspipe)
+
 # Simple Smart Pipe
 
 SSPipe is a python productivity-tool for rapid data manipulation in python.
@@ -89,7 +91,7 @@ First argument of `p()` defines the function
 
 Rest of arguments of `p()` are passed
  to the transforming function of each stage. For example,
- `x | p(f1, y) | p(f2, k=z)` is equivalent to `f2(f1(y, x), k=z)`
+ `x | p(f1, y) | p(f2, k=z)` is equivalent to `f2(f1(x, y), k=z)`
 
 
 ## Advanced Guide
