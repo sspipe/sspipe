@@ -149,7 +149,7 @@ euler2 = (fib() | p.where(lambda x: x % 2 == 0)
 ```
 
 You can also pass `px` shorthands to JulienPalard/Pipe API:
-```
+```python
 euler2 = (fib() | p.where(px % 2 == 0)
                 | p.take_while(px < 4000000)
                 | p.add())
