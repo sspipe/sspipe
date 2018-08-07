@@ -145,7 +145,7 @@ from sspipe import p, px
 
 euler2 = (fib() | p.where(px % 2 == 0)
                 | p.take_while(px < 4000000)
-                | add)
+                | p.add())
 ```
 
 ### Internals
