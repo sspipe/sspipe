@@ -11,36 +11,28 @@ with open(path.join(here, 'sspipe', 'version.py')) as f:
     exec(f.read())
     
 setup(
-    name='sspipe',  # Required
-    version=__version__,  # Required
-    description='Simple Stupid Pipe',  # Required
-    long_description=long_description,  # Optional
-    long_description_content_type='text/markdown',  # Optional (see note above)
-    url='https://github.com/sspipe/sspipe.git',  # Optional
-    author='Mohammad Hossein Sekhavat',  # Optional
-    author_email='sekhavat17@gmail.com',  # Optional
-    classifiers=[  # Optional
+    name='sspipe',
+    version=__version__,
+    description='Simple Stupid Pipe',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+    url='https://github.com/sspipe/sspipe.git',
+    author='Mohammad Hossein Sekhavat',
+    author_email='sekhavat17@gmail.com',
+    classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Build Tools',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3',
     ],
-    keywords='pipe helper tool magrittr data science',  # Optional
-    packages=find_packages(exclude=[]),  # Required
-    install_requires=['toolz==0.9.0'],  # Optional
-    extras_require={  # Optional
+    keywords='pipe helper tool magrittr data science',
+    packages=find_packages(exclude=[]),
+    extras_require={
         'dev': ['check-manifest'],
         'test': ['coverage'],
     },
-    package_data={  # Optional
-    },
-    entry_points={  # Optional
-    },
-    # project_urls={  # Optional
-    #     'Bug Reports': 'https://github.com/pypa/sampleproject/issues',
-    #     'Funding': 'https://donate.pypi.org',
-    #     'Say Thanks!': 'http://saythanks.io/to/example',
-    #     'Source': 'https://github.com/pypa/sampleproject/',
-    # },
+    install_requires=[
+        'pipe==1.5.0',
+    ]
 )
