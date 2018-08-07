@@ -143,6 +143,13 @@ def fib():
 
 from sspipe import p, px
 
+euler2 = (fib() | p.where(lambda x: x % 2 == 0)
+                | p.take_while(lambda x: x < 4000000)
+                | p.add())
+```
+
+You can also pass `px` shorthands to JulienPalard/Pipe API:
+```
 euler2 = (fib() | p.where(px % 2 == 0)
                 | p.take_while(px < 4000000)
                 | p.add())
