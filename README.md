@@ -1,5 +1,6 @@
 [![Downloads](http://pepy.tech/badge/sspipe)](http://pepy.tech/project/sspipe)
 [![Build Status](https://travis-ci.org/sspipe/sspipe.svg?branch=master)](https://travis-ci.org/sspipe/sspipe)
+[![PyPI](https://badge.fury.io/py/sspipe.svg)](http://pypi.org/project/sspipe)
 
 # Simple Smart Pipe
 
