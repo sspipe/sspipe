@@ -16,7 +16,10 @@ setup(
     description='Simple Stupid Pipe',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/sspipe/sspipe.git',
+    url='https://sspipe.github.io/',
+    project_urls={
+        'Source': 'https://github.com/sspipe/sspipe',
+    },
     author='Mohammad Hossein Sekhavat',
     author_email='sekhavat17@gmail.com',
     classifiers=[
