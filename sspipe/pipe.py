@@ -104,6 +104,13 @@ def _override_operator(op, impl):
     setattr(Pipe, op, __operator__)
 
 
+def _reverse_args(func):
+    def wrapper(*args):
+        return func(*args[::-1])
+
+    return wrapper
+
+
 for _op in [
     'len', 'abs',
     'contains', 'await',
@@ -130,7 +137,8 @@ for _op in [
     else:
         try:
             _impl = getattr(operator, _op)
-        except AttributeError:
-            _impl = getattr(operator, _op[1:])
+        except AttributeError:  # radd, rrshift, rsub, rmul, ...
+            _op = _op[1:]  # remove the first 'r' letter
+            _impl = _reverse_args(getattr(operator, _op))
 
     _override_operator(_name, _impl)
