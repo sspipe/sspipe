@@ -34,3 +34,8 @@ def test_divide():
 def test_reverse():
     assert (1 | 2 + px) == 3
     assert (1 | 2 << px) == 4
+
+
+def test_order():
+    assert ('a' | px + 'b') == 'ab'
+    assert ('a' | 'b' + px) == 'ba'
