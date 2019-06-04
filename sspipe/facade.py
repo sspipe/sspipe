@@ -15,6 +15,10 @@ class Facade():
         >>> 1 | p('{}{}{x}'.format, 2, x=3)
         '123'
         """
+        if isinstance(func, (list, tuple, dict, set)):
+            if args or kwargs:
+                raise RuntimeError('You should pass no extra args to Pipe if its first input is list or tuple')
+            return Pipe.collection(func)
         if not args and not kwargs:
             return Pipe(func)
         elif any(

@@ -41,6 +41,11 @@ class Pipe(object):
     def __call__(self, *args, **kwargs):
         return Pipe.partial(self, *args, **kwargs)
 
+    def __getitem__(self, item):
+        if isinstance(item, tuple) and len(item) < 20:  # do not iterate over too large tuples!
+            item = Pipe.collection(item)
+        return Pipe.partial(operator.getitem, self, item)
+
     __array_priority__ = -10
 
     @staticmethod
@@ -96,6 +101,19 @@ class Pipe(object):
 
             return Pipe(_resolve_function_call)
 
+    @staticmethod
+    def collection(items):
+        if isinstance(items, dict):
+            def _resolve_collection_creation(x):
+                resolved_items = {_resolve(key, x): _resolve(val, x) for key, val in items.items()}
+                return dict(resolved_items)
+        else:
+            def _resolve_collection_creation(x):
+                resolved_items = (_resolve(item, x) for item in items)
+                return type(items)(resolved_items)
+
+        return Pipe(_resolve_collection_creation)
+
 
 def _override_operator(op, impl):
     def __operator__(*args):
@@ -124,7 +142,7 @@ for _op in [
     'truediv', 'floordiv', 'mod',
     'rfloordiv', 'rmod',  # skipped rtruediv because it is implemented in Pipe class
     'pos', 'neg', 'invert',
-    'getitem']:
+    ]:
     _name = '__{}__'.format(_op)
 
     if _op in ['and', 'rand']:
