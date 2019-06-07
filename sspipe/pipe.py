@@ -74,7 +74,10 @@ class Pipe(object):
 
     @staticmethod
     def unpipe(pipe):
-        return pipe._____func___
+        if isinstance(pipe, Pipe):
+            return pipe._____func___
+        else:
+            return pipe
 
     @staticmethod
     def partial(func, *args, **kwargs):

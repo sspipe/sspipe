@@ -30,9 +30,7 @@ class Facade():
                 raise RuntimeError('You should pass only one function/pipe to p(map) and p(filter)')
             if kwargs:
                 raise RuntimeError('You should pass no kwargs to p(map) and p(filter)')
-            if isinstance(f, Pipe):
-                f = Pipe.unpipe(f)
-            return Pipe.partial(func, f, x)
+            return Pipe.partial(func, Pipe.unpipe(f), x)
         elif any(
             isinstance(arg, Pipe) for arg in args
         ) or any(
