@@ -43,94 +43,20 @@ be called on the piped object) and `px` (as a placeholder for piped object).
 | Simple<br>function call | `"hello world!" \| p(print)` | `X = "hello world!"`<br>`print(X)` |
 | Function call<br>with extra args | `"hello" \| p(print, "world", end='!')` | `X = "hello"`<br>`print(X, "world", end='!')` |
 | Explicitly positioning<br>piped argument<br>with `px` placeholder | `"world" \| p(print, "hello", px, "!")` | `X = "world"`<br>`print("hello", X, "!")` |
-| Chaining pipes | `5 \| px + 2 \| px ** 5 + px \| p(print)` | `X = 5`<br>`X = X + 2`<br>`X = X ** 5 + X`<br>`print(X)`
+| Chaining pipes | `5 \| px + 2 \| px ** 5 + px \| p(print)` | `X = 5`<br>`X = X + 2`<br>`X = X ** 5 + X`<br>`print(X)` |
 | Tailored behavior<br>for builtin `map`<br>and `filter` | `(`<br>`  range(5)`<br>`  \| p(filter, px % 2 == 0)`<br>`  \| p(map, px + 10)`<br>`  \| p(list) \| p(print)`<br>`)` | `X = range(5)`<br>`X = filter((lambda x:x%2==0),X)`<br>`X = map((lambda x: x + 10), X)`<br>`X = list(X)`<br>`print(X)` |
-| NumPy expressions | `range(10) \| np.sin(px)+1 \| p(plt.plot)` | `X = range(10)`<br>`X = np.sin(X) + 1`<br>`plt.plot(X)`
+| NumPy expressions | `range(10) \| np.sin(px)+1 \| p(plt.plot)` | `X = range(10)`<br>`X = np.sin(X) + 1`<br>`plt.plot(X)` |
 | Pandas support | `people_df \| px.loc[px.age > 10, 'name']` | `X = people_df`<br>`X.loc[X.age > 10, 'name']` |
-| Assignment | `people_df['name'] \|= px.str.upper()` | `X = people_df['name']`<br>`X = X.str.upper()`<br>`people_df['name'] = X`
-| Builtin<br>Data Structures | `2 \| p({px-1: p([px, p((px+1, 4))])})` | `X = 2`<br>`X = {X-1: [X, (X+1, 4)]}`
+| Assignment | `people_df['name'] \|= px.str.upper()` | `X = people_df['name']`<br>`X = X.str.upper()`<br>`people_df['name'] = X` |
+| Pipe as variable | `to_upper = px.strip().upper()`<br>`to_underscore = px.replace(' ', '_')`<br>`normalize = to_upper \| to_underscore`<br>`"  ab cde " \| normalize \| p(print)` | `_f1 = lambda x: x.strip().upper()`<br>`_f2 = lambda x: x.replace(' ','_')`<br>`_f3 = lambda x: _f2(_f1(x))`<br>`X = " ab cde "`<br>`X = _f3(X)`<br>`print(X)` |
+| Builtin<br>Data Structures | `2 \| p({px-1: p([px, p((px+1, 4))])})` | `X = 2`<br>`X = {X-1: [X, (X+1, 4)]}` |
 
-### Introduction
-Suppose we want to generate a dict, mapping names of 5 biggest
-files in current directory to their size in bytes, like below:
+### How it works
 
-`{'README.md': 3732, 'setup.py': 1642, '.gitignore': 1203, 'LICENSE': 1068, 'deploy.sh': 89}`
-
-One approach is to use `os.listdir()` to list files
-and directories in current working directory, filter those which are file,
-map each to a tuple of (name, size), sort them by size,
-take first 5 items, make adict and print it.
-
-Although it is not a good practice to write the whole script in single
-expression without introducing intermediary variables, it is an exaggerated
-example, doing it in a single expression for demonstration purpose:
-
-```python
-import os
-
-print(
-    dict(
-        sorted(
-            map(
-                lambda x: [x, os.path.getsize(x)],
-                filter(os.path.isfile, os.listdir('.'))
-            ), key=lambda x: x[1], reverse=True
-        )[:5]
-    )
-)
-```
-
-Using sspipe's `p` operator, the same single expression can be written in a
-more human-readable flow of sequential transformations:
-
-```python
-import os
-from sspipe import p
-
-(
-    os.listdir('.')
-    | p(filter, os.path.isfile)
-    | p(map, lambda x: [x, os.path.getsize(x)])
-    | p(sorted, key=lambda x: x[1], reverse=True)[:5]
-    | p(dict)
-    | p(print)
-)
-```
-As you see, the expression is decomposed into a sequence
-starting with initial data, `os.list('.')`, followed by multiple
-`| p(...)` stages.
-
-Each `| p(...)` stage describes a transformation that is applied to
- to left-hand-side of `|`.
-
-First argument of `p()` defines the function
- that is applied on data. For example, `x | p(f1) | p(f2) | p(f3)` is
- equivalent to `f3(f2(f1(x)))`.
-
-Rest of arguments of `p()` are passed
- to the transforming function of each stage. For example,
- `x | p(f1, y) | p(f2, k=z)` is equivalent to `f2(f1(x, y), k=z)`
-
-
-## Advanced Guide
-
-### The `px` helper
-
-TODO: explain.
-
-* `px` is implemented by: `px = p(lambda x: x)`
-* `px` is similar to, but not same as, magrittr's dot(`.`) placeholder
-  * `x | p(f, px+1, y, px+2)` is equivalent to `f(x+1, y, x+2)`
-* `A+1 | f(px, px[2](px.y))` is equivalent to `f(A+1, (A+1)[2]((A+1).y)`
-* `px` can be used to prevent adding parentheses
-  * `x+1 | px * 2 | np.log(px)+3` is equivalent to: `np.log((x+1) * 2) + 3`
-
-### Integration with Numpy, Pandas, Pytorch
-
-TODO: explain.
-* `p` and `px` are compatible with Numpy, Pandas, Pytorch.
-* `[1,2] | p(pd.Series) | px[px ** 2 < np.log(px) + 1]` is equivalent to
-`x=pd.Series([1, 2]); x[x**2 < np.log(x)+1]`
+The expression `p(func, *args, **kwargs)` returns a `Pipe` object that overloads 
+`__or__` and `__ror__` operators. This object keeps `func` and `args` and `kwargs` until
+evaluation of `x | <Pipe>`, when `Pipe.__ror__` is called by python. Then it will evaluate
+`func(*args, **kwargs)` and return the result.
 
 ### Compatibility with JulienPalard/Pipe
 
@@ -172,11 +98,3 @@ euler2 = (fib() | p.where(px % 2 == 0)
                 | p.take_while(px < 4000000)
                 | p.add())
 ```
-
-### Internals
-
-TODO: explain.
-
-* `p` is a class that overrides `__ror__` (`|`) operator to apply
-the function to operand.
-
