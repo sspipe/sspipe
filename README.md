@@ -10,7 +10,25 @@ SSPipe is a python productivity-tool for rapid data manipulation in python.
 
 It helps you break up any complicated expression into a sequence of
 simple transformations, increasing human-readability and decreasing the
-need for matching parentheses! As an example, here is a single line code for plotting
+need for matching parentheses! 
+
+As an example, here is a single line code for reading students' data
+from 'students.csv', reporting class names which have at least 5 students
+whose score is more than global average into `report.csv`:
+
+```python
+from sspipe import p, px
+import pandas as pd
+
+pd.read_csv('students.csv') | px[px.score > px.score.mean()].groupby('class').size() | px[px > 5].to_csv('report.csv')
+
+# The single-line code above is equivalent to the following code without SSPipe:
+# X = pd.read_csv('students.csv')
+# X = X[X.score > X.score.mean()].groupby('class').size()
+# X[X > 5].to_csv('report.csv')
+```
+
+As another example, here is a single line code for plotting
 sin(x) for points in range(0, 2*pi) where cos(x) is less than 0 in red color:
 
 ```python
