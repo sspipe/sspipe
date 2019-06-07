@@ -14,6 +14,10 @@ need for matching parentheses! As an example, here is a single line code for plo
 sin(x) for points in range(0, 2*pi) where cos(x) is less than 0:
 
 ```python
+from sspipe import p, px
+import numpy as np
+import matplotlib.pyplot as plt
+
 np.linspace(0, 2*np.pi) | px[np.cos(px) < 0] | p(plt.plot, px, np.sin(px), '--')
 ```
 
