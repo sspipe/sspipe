@@ -13,14 +13,14 @@ simple transformations, increasing human-readability and decreasing the
 need for matching parentheses! 
 
 As an example, here is a single line code for reading students' data
-from 'students.csv', reporting those in the class 'A19' whose score is more
+from 'data.csv', reporting those in the class 'A19' whose score is more
 than the average class score into 'report.csv':
 
 ```python
 from sspipe import p, px
 import pandas as pd
 
-pd.read_csv('students.csv') | px[px.class == 'A19'] | px[px.score > px.score.mean()].to_csv('report.csv')
+pd.read_csv('data.csv') | px[px['class'] == 'A19'] | px[px.score > px.score.mean()].to_csv('report.csv')
 ```
 
 As another example, here is a single line code for plotting
