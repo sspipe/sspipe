@@ -18,10 +18,10 @@ from sspipe import p, px
 import numpy as np
 import matplotlib.pyplot as plt
 
-np.linspace(0, 2*np.pi) | px[np.cos(px) < 0] | p(plt.plot, px, np.sin(px), 'r')
+np.linspace(0, 2*np.pi, 100) | px[np.cos(px) < 0] | p(plt.plot, px, np.sin(px), 'r')
 
 # The single-line code above is equivalent to the following code without SSPipe:
-# X = np.linspace(0, 2*np.pi)
+# X = np.linspace(0, 2*np.pi, 100)
 # X = X[np.cos(X) < 0]
 # plt.plot(X, np.sin(X), 'r')
 ```
