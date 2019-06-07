@@ -11,14 +11,19 @@ SSPipe is a python productivity-tool for rapid data manipulation in python.
 It helps you break up any complicated expression into a sequence of
 simple transformations, increasing human-readability and decreasing the
 need for matching parentheses! As an example, here is a single line code for plotting
-sin(x) for points in range(0, 2*pi) where cos(x) is less than 0:
+sin(x) for points in range(0, 2*pi) where cos(x) is less than 0 in red color:
 
 ```python
 from sspipe import p, px
 import numpy as np
 import matplotlib.pyplot as plt
 
-np.linspace(0, 2*np.pi) | px[np.cos(px) < 0] | p(plt.plot, px, np.sin(px), '--')
+np.linspace(0, 2*np.pi) | px[np.cos(px) < 0] | p(plt.plot, px, np.sin(px), 'r')
+
+# The single-line code above is equivalent to the following code without SSPipe:
+# X = np.linspace(0, 2*np.pi)
+# X = X[np.cos(X) < 0]
+# plt.plot(X, np.sin(X), 'r')
 ```
 
 If you're familiar with
