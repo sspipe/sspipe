@@ -10,16 +10,18 @@ SSPipe is a python productivity-tool for rapid data manipulation in python.
 
 It helps you break up any complicated expression into a sequence of
 simple transformations, increasing human-readability and decreasing the
-need for matching parentheses!
+need for matching parentheses! As an example, here is a single line code for plotting
+sin(x) for points in range(0, 2*pi) where cos(x) is less than 0:
+
+```python
+np.linspace(0, 2*np.pi) | px[np.cos(px) < 0] | p(plt.plot, px, np.sin(px), '--')
+```
 
 If you're familiar with
 [`|` operator](https://en.wikipedia.org/wiki/Pipeline_(Unix))
 of Unix, or
 [`%>%` operator](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html)
-of R's magrittr, or
-[`DataFrame.pipe`](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.pipe.html)
-method of pandas library, `sspipe` provides the same functionality
-for any object in python.
+of R's magrittr, `sspipe` provides the same functionality in python.
 
 ### Installation and Usage
 Install sspipe using pip:
