@@ -68,6 +68,11 @@ class Pipe(object):
         return NotImplemented
 
     @staticmethod
+    def __pandas_ufunc__(func, method, *args, **kwargs):
+        print(func)
+        return 10
+
+    @staticmethod
     def unpipe(pipe):
         return pipe._____func___
 

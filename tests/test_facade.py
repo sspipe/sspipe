@@ -10,3 +10,7 @@ def test_pipe_args():
         return x * y
 
     assert (1 | p(f, px + 1, px + 2)) == 6
+
+def test_map_filter():
+    assert range(3) | p(filter, px % 2 == 0) | p(map, px + 1) | p(list) | (px == [1, 3])
+    # pass

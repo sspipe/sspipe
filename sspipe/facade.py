@@ -21,14 +21,24 @@ class Facade():
             return Pipe.collection(func)
         if not args and not kwargs:
             return Pipe(func)
+        elif func in (map, filter):
+            if len(args) == 1:
+                f, x = args[0], px
+            elif len(args) == 2:
+                f, x = args
+            else:
+                raise RuntimeError('You should pass only one function/pipe to p(map) and p(filter)')
+            if kwargs:
+                raise RuntimeError('You should pass no kwargs to p(map) and p(filter)')
+            if isinstance(f, Pipe):
+                f = Pipe.unpipe(f)
+            return Pipe.partial(func, f, x)
         elif any(
             isinstance(arg, Pipe) for arg in args
         ) or any(
             isinstance(arg, Pipe) for arg in kwargs.values()
         ) or isinstance(func, Pipe):
             return Pipe.partial(func, *args, **kwargs)
-        elif func in (map, filter):
-            return Pipe(lambda x: func(*args, x, **kwargs))
         else:
             return Pipe(lambda x: func(x, *args, **kwargs))
 
