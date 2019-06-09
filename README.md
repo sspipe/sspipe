@@ -80,9 +80,11 @@ be called on the piped object) and `px` (as a placeholder for piped object).
 The expression `p(func, *args, **kwargs)` returns a `Pipe` object that overloads 
 `__or__` and `__ror__` operators. This object keeps `func` and `args` and `kwargs` until
 evaluation of `x | <Pipe>`, when `Pipe.__ror__` is called by python. Then it will evaluate
-`func(x, *args, **kwargs)` and return the result.
+`func(x, *args, **kwargs)` and return the result. 
 
 The `px` object is simply `p(lambda x: x)`.
+
+Please notice that SSPipe does not wrap piped objects. On the other hand, it just wraps transforming functions. Therefore, when a variable like `x` is not an instance of `Pipe` class, after python evaluates `y = x | p(func)`, the resulting variable `y` has absolutely no trace of Pipe. Thus, it will be exactly the same object as if we have originally evaluated `y = func(x)`. 
 
 ### Compatibility with JulienPalard/Pipe
 
