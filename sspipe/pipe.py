@@ -1,6 +1,6 @@
 import operator
 
-FALLBACK_RTRUEDIV_TYPES = (type(dict().keys()), type(dict().values()))
+FALLBACK_RTRUEDIV_TYPES = (type(dict().keys()), type(dict().values()), type(dict().items()))
 
 
 def _resolve(pipe, x):

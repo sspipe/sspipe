@@ -86,6 +86,22 @@ The `px` object is simply `p(lambda x: x)`.
 
 Please notice that SSPipe does not wrap piped objects. On the other hand, it just wraps transforming functions. Therefore, when a variable like `x` is not an instance of `Pipe` class, after python evaluates `y = x | p(func)`, the resulting variable `y` has absolutely no trace of Pipe. Thus, it will be exactly the same object as if we have originally evaluated `y = func(x)`. 
 
+### Common Gotchas
+
+* Incompatibility with `dict.items`, `dict.keys` and `dict.values`:
+  
+  The objects returned by dict.keys(), dict.values() and dict.items() are
+   called [view objects](https://docs.python.org/3.3/library/stdtypes.html#dict-views).
+  Python does not allow classes to override the `|` operator on these types. As a workaround,
+  the `/` operator has been implemented for view objects. Example:
+  ```python3
+  # WRONG ERRONEOUS CODE:
+  {1: 2, 3: 4}.items() | p(list) | p(print)
+  
+  # CORRECT CODE (With / operator):
+  {1: 2, 3: 4}.items() / p(list) | p(print)
+  ```
+
 ### Compatibility with JulienPalard/Pipe
 
 This library is inspired by, and depends on, the intelligent and concise work of
