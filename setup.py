@@ -36,6 +36,6 @@ setup(
         'test': ['coverage'],
     },
     install_requires=[
-        'pipe==1.5.0',
+        'pipe',
     ]
 )

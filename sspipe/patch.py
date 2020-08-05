@@ -37,3 +37,11 @@ def patch_all():
         patch_cls_operator(torch.Tensor)
     except ImportError:
         pass
+    
+    try:
+        from django.db.models import query
+
+        patch_cls_operator(query.QuerySet)
+
+    except ImportError:
+        pass
