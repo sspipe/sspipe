@@ -1,0 +1,33 @@
+version: 2.1
+shared: &shared
+  steps:
+    - checkout
+    - run: pip3 install --user .
+    - run: pip3 install --user -r requirements.dev.txt
+    - run: pytest
+#    - run: DEBIAN_FRONTEND=noninteractive sudo apt-get install -y
+jobs:
+  py36:
+    <<: *shared
+    docker:
+      - image: circleci/python:3.6
+  py37:
+    <<: *shared
+    docker:
+      - image: circleci/python:3.7
+  py38:
+    <<: *shared
+    docker:
+      - image: circleci/python:3.8
+  py39:
+    <<: *shared
+    docker:
+      - image: circleci/python:3.9
+
+workflows:
+  test:
+    jobs:
+      - py36
+      - py37
+      - py38
+      - py39
